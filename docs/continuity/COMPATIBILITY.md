@@ -19,6 +19,7 @@ This is an unaudited testnet release candidate. Only the new Arc PAY subset is i
 | Circle SCA / ERC1271 | Potential external signature validator | BLOCKED | Contract signature validation not implemented; no ecrecover equivalence claim |
 | Safe / ERC7579 | Potential module or controller | BLOCKED | No module installation/version/license/deployment integration verified |
 | Sui v1 / Sepolia v1 | Existing contracts | Regression tested | Domain and original code unchanged; no v2 Move compiler translation claim |
+| Sui Arc v2/v3 hash parity | Additive Move module `amane::arc_eip712` | LOCAL_UNIT | Reproduces v2 root/lease/action digests and 12 of 30 v3 vectors (both kinds, all three chain ids) byte-for-byte; does not enforce Arc authority |
 
 Compiler omission is prohibited. Unsupported clauses reject instead of compiling to a weaker rule. Changing root policy requires a fresh threshold-signed version; a model cannot expand scope. Root total resets only on explicit newly signed root version. Fixed periods may allow spending near either side of the boundary; they are not rolling windows. Threshold compromise is outside the threat model.
 

@@ -8,24 +8,49 @@ Amane is an SDK and a pair of on-chain account contracts (Move on Sui, Solidity 
 
 ---
 
-## Continuity v2 on Arc — restricted testnet release candidate
+## Arc authority (v2 live subset, v3 local candidate): standalone quickstart
 
-The new modules in `evm/src/arc` and packages `@amane/arc`, `@amane/policy`, `@amane/cctp`, `@amane/verify` are version 0.2.0. The supported execution path is **contract-enforced PAY** with a pinned token, recipient and immutable adapter. No Synq account or repository is required. Existing `@amane/core` / `@amane/sdk` v1 exports and Sui/Sepolia contracts remain unchanged.
+Everything here runs without any Synq account, repository or private key. Packages are `@amane/policy`, `@amane/arc`, `@amane/cctp`, `@amane/verify` at 0.3.1 plus the unchanged v1 `@amane/core` and `@amane/sdk` at 0.1.0. They are **not published to npm**: install the local tarballs. Existing v1 Sui/Sepolia contracts and exports are unchanged. **Unaudited. Testnet assets only.**
 
 ```bash
+# 1. Build and verify everything from source (Node 22+, Foundry, Sui CLI 1.80+)
 npm ci
-npm run build
-forge test --offline --root evm
-# Full local independent SDK proof (start silent Anvil in another terminal):
+FOUNDRY_OFFLINE=true npm test            # TypeScript + Foundry + Move
+
+# 2. Build the exact local tarballs (byte-reproducible) and print their SHA-256
+mkdir -p reports/packages-v3
+for p in core sdk policy arc cctp verify; do npm pack -w packages/$p --pack-destination reports/packages-v3; done
+shasum -a 256 reports/packages-v3/*.tgz
+
+# 3. Install them in your own project (no registry needed)
+mkdir my-app && cd my-app && npm init -y >/dev/null && npm pkg set type=module
+npm install ../reports/packages-v3/amane-{core-0.1.0,sdk-0.1.0,policy-0.3.1,arc-0.3.1,cctp-0.3.1,verify-0.3.1}.tgz
+cd ..
+
+# 4. Local proof on Anvil: fixture keys, no faucet. Terminal A:
 anvil --host 127.0.0.1 --port 18545 --chain-id 31337 --silent
-node scripts/continuity/local-proof.mjs
-# Read-only verification of recorded Arc testnet allowed/denied receipts:
+#    Terminal B: owner policy, unfunded agent, unrelated relayer, exact payment,
+#    forbidden recovery redirect, crash-restart without re-signing, canonical receipt check
+node scripts/continuity/authority-local-proof.mjs
+
+# 5. Read-only check of the recorded Arc testnet proof (public RPC, no key)
 node examples/third-party-arc-pay/verify.mjs
 ```
 
-Local tests, local Anvil and real testnet receipts carry distinct labels. See `deployments/arc-testnet.json` for the exact available live proof and addresses, [capabilities](docs/continuity/COMPATIBILITY.md), [threat model](docs/continuity/THREAT_MODEL.md) and [operations/recovery](docs/continuity/OPERATIONS.md). Source CCTP bridge authority, authenticated mint provenance, global cross-chain quota, SWAP/ESCROW_FUND, Circle/Safe/1271/7579 adapters and reimbursement are **unavailable** in this release. The CCTP helper prepares unsigned human-approval calldata; it cannot be used to advertise an Amane-authorized bridge. IntentVault is restricted custody with offchain provenance, not authenticated CCTP source binding.
+### What each claim is backed by
 
-The relayer pays native USDC gas. A preflight rejection avoids a submitted transaction; races and deliberately broadcast negative tests still cost gas. No mainnet, remote push or package publication is authorized by these instructions. **Unaudited; testnet assets only.**
+| Capability | Proof level | Notes |
+|---|---|---|
+| Arc v2 PAY: pinned token/recipient/adapter, per-action, fixed-period and total caps, nonce replay, pause/revoke, recovery | **LIVE_ARC_TESTNET** | 25 owner-approved transactions, one 0.01 USDC PAY plus a mined reverted redirect; archived account `0x24655c8a...Ca0F6` in `deployments/arc-testnet.json`. Restricted subset only. |
+| Permissionless relay with a funded relayer and an unfunded agent | LIVE_ARC_TESTNET (v2) and LOCAL_INTEGRATION (v3) | Sponsorship, zero reimbursement in the live proof. |
+| v3 full authority: multiple assets and recipients, delegated issuers, SWAP floor, ESCROW_FUND credit, bounded fee reimbursement | LOCAL_INTEGRATION | Foundry, SDK and Anvil only. **Not deployed.** SWAP and ESCROW_FUND run against local fixture targets; no approved live router or escrow target exists. |
+| CCTP source adapter, raw-message mint vault, delayed-mint quarantine and recovery | LOCAL_INTEGRATION | Uses a fixture message transmitter. Never run against real Circle attestations. |
+| Global quota root, endpoint quota, authenticated grant/freeze/ACK sync | LOCAL_INTEGRATION | Includes 512-run lifecycle fuzz and a stateful invariant. In-memory bus is a fixture, not a Circle proof. |
+| Sui `amane::arc_eip712` v2/v3 hash and domain parity | LOCAL_UNIT | Golden vectors only. Sui does not enforce Arc authority. |
+| Circle wallets, Safe, ERC-1271, ERC-7579, Sui continuity route | **Unavailable** | Fail closed. No integration or credentials exist. |
+| Sepolia deployment of v3 | Not done | Only the AdapterRegistry is deployed there; further steps wait on an owner gas amendment (see `RUN_STATE.md`). |
+
+The relayer pays gas. A preflight rejection costs nothing, but races and deliberately broadcast negative tests still do. Local tests, local Anvil and real testnet receipts carry distinct labels throughout; none of the local results should be read as live evidence. See [capabilities](docs/continuity/COMPATIBILITY.md), [threat model](docs/continuity/THREAT_MODEL.md) and [operations/recovery](docs/continuity/OPERATIONS.md). No professional security audit, mainnet readiness or universal wallet compatibility is claimed. Licensed MIT; each package carries its own LICENSE.
 
 ---
 
@@ -443,10 +468,9 @@ npm run vectors   # regenerate golden vectors and Move fixtures; the diff must b
 
 | Suite | Tests |
 |---|---|
-| Foundry (unit, cross-chain, Wormhole, adversarial, invariants) | 178 |
-| Move (account, adversarial, cross-chain, golden parity) | 126 |
-| `@amane/core` (hashing, codes, subset rules, cross-chain) | 55 |
-| `@amane/sdk` (outcome classification) | 10 |
+| Foundry (v1, Arc v2, v3 authority, CCTP, quota fuzz and invariants) | 267 |
+| Move (v1 account, adversarial, cross-chain, golden parity, Arc v2/v3 parity) | 142 |
+| TypeScript, all six workspaces (vitest) | 159 |
 
 ## Deploying your own
 
@@ -492,7 +516,7 @@ MIT — see [LICENSE](LICENSE).
 
 ## Full authority v3 candidate
 
-The separate `evm/src/arc/authority`, `arc/cctp`, `arc/quota` and `arc/adapters` modules extend the original mandate beyond the restricted live PAY proof above. Package `0.3.0` adds `/authority` subpaths while preserving existing `@amane/core` / `@amane/sdk` v1 exports and the v2 default APIs. It is a local candidate: no v3 testnet deployment is implied by the archived v2 receipts.
+The separate `evm/src/arc/authority`, `arc/cctp`, `arc/quota` and `arc/adapters` modules extend the original mandate beyond the restricted live PAY proof above. Package `0.3.1` adds `/authority` subpaths while preserving existing `@amane/core` / `@amane/sdk` v1 exports and the v2 default APIs. It is a local candidate: no v3 testnet deployment is implied by the archived v2 receipts.
 
 The full account supports multiple assets/recipients, delegated issuers, SWAP/PAY/BRIDGE/ESCROW_FUND, fixed period and cumulative caps, exact measurement, and threshold recovery. Optional owner-plus-agent reimbursement shares principal caps and cannot exceed measured gas. New CCTP modules bind source account execution to a fixed destination specification and verify actual raw-message attestations plus mint deltas. Global quota remains encumbered until an authenticated finalized freeze acknowledgement; after an asset's first binding, policy rotation cannot silently disable quota.
 
