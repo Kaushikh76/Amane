@@ -1,0 +1,17 @@
+# Reproduction and recovery
+
+Use Node 22+, Foundry with Solidity 0.8.28 and Sui >=1.80. Baseline verified with Sui 1.81.1. Run `npm ci`, `npm run build`, `npm run test --workspaces`, `forge test --offline --root evm`, `sui move test --path sui/amane` (or cd into sui/amane if CLI requires). On this macOS host ordinary Foundry can crash in system proxy discovery; offline mode or host execution avoids that environment issue.
+
+Generate v2 artifacts with `python3 scripts/continuity/export-artifacts.py`, then rebuild. Artifacts derive exclusively from Foundry output; immutable runtime hashes are deployment-specific. Regenerate golden hashes with `node scripts/continuity/generate-golden.mjs`; committed vectors must match. Original `npm run vectors` continues to regenerate v1 vectors and must not silently alter them.
+
+For a complete local SDK proof, start `anvil --host 127.0.0.1 --port 18545 --chain-id 31337 --silent`, then `node scripts/continuity/local-proof.mjs`. This uses deterministic local fixture keys only and never a testnet key. Silent Anvil prevents the default fixture-key display. It demonstrates a permitted transfer, a signed malicious recipient revert and crash/resume without re-signing. Output is reports/local-proof.json and is LOCAL_INTEGRATION, never a testnet receipt.
+
+The owner-specific live runner is scripts/continuity/broadcast-approved.mjs. Default invocation performs read-only network checks and reads no keys. Its execute flag is for the recorded owner-approved plan only; it is not general permission to deploy or spend. The shared operator must use pending nonces sequentially. The SDK FileRelayJournal persistent nonce allocator instead assumes one exclusive gas payer and shared journal root across all workers; do not use that allocator with Synq's concurrently active shared operator.
+
+A nonce rejection is reconciled against our own recorded hash before retry with a newly fetched pending nonce. Never increase a fee to replace a transaction not owned by this run, never cancel another user's transaction, and never retry an unknown burn. On uncertainty retain signed bytes and STOP the dependent broadcast. Files in reports/approved-broadcast.json are local evidence and signed raw transaction records; never commit them or private key files.
+
+If an agent is compromised, an authorized controller pauses/revokes directly; these calls need gas. A pause alone does not authorize early intent-vault recovery. Recover only after the immutable deadline, lease expiry, revocation or root replacement invalidates the committed action, and only through controller threshold to the vault's immutable recovery destination. Confirm chain state before telling the UI the action is effective.
+
+If a relayer dies after RESERVED or before signing, or holds the nonce lock at crash, reconcile its journal and chain nonce manually. Do not auto-delete a lock, re-sign with a new nonce or declare an unknown payment failed. Signed bytes are fsynced before broadcasting. A journal is trusted local storage and requires access controls, backup and one shared root per gas payer. Signer APIs may sign but must not broadcast independently.
+
+If bytecode identity, token decimals, provider route or RPC canonical block disagree, disable writes. Store single-effect ledger keys on chain/account/lease/action nonce and obligation id. Do not credit a source burn, attestation HTTP status, pending native balance or a duplicate mirror log as an additional settled asset.

@@ -1,0 +1,211 @@
+{
+  "schemaVersion": "amane.arc-release/v1",
+  "environment": "arc-testnet",
+  "status": "VERIFIED_TESTNET_PAY_ONLY_UNAUDITED",
+  "chainId": 5042002,
+  "rpc": "https://rpc.testnet.arc.io",
+  "contractSourceCommit": "2b21f294078576c027bafe1b565327e2f0f0f978",
+  "compiler": {
+    "solc": "0.8.28",
+    "evmVersion": "cancun",
+    "viaIR": true,
+    "optimizerRuns": 1
+  },
+  "sourceVerification": "COMPILED_RUNTIME_AND_IMMUTABLES_CHECKED; EXPLORER_SOURCE_SUBMISSION_NOT_PERFORMED",
+  "contracts": {
+    "AdapterRegistry": {
+      "address": "0xa9e51c4ef06fa90f6573f34df5bb3f35ee1c9806",
+      "codeHash": "0x7b562cfa8a9887f28cd5210323a71b92bfd4f684b0b08a9ec9ad8b22d77af248"
+    },
+    "TransferPayAdapter": {
+      "address": "0x688bb7d5adee4e25839b4868df604bc9e4841aee",
+      "codeHash": "0x810fc39745be92ddd593b835c391f2e4fa5ade2a38878e558e2dad96fdd10ddd"
+    },
+    "ArcFactory": {
+      "address": "0x78dc3e1acf450becfd6d06897d93be9e51aa33a1",
+      "codeHash": "0x8064894f1cb60d12e35b7648246a26dc92a42f03e46ad0015023fc11be036c59"
+    },
+    "ArcAccount": {
+      "address": "0x24655c8a9978A020763200Ce73955DF9995Ca0F6",
+      "codeHash": "0x711d5951665cc42377d707f21a5d1ee00caf85b47c71ac47f5c15933533d6767"
+    },
+    "IntentVaultFactory": {
+      "address": "0xb2394c6433032440be37f231661daa98bf430d5d",
+      "codeHash": "0x61c268517072e5c490da3b216f3afa52d79c12a676e1c10fb84e35e96effd788"
+    },
+    "IntentVault-reserved": {
+      "address": "0x4d17BC6796A942E1288b09c8B73D9cCb740E6fc5",
+      "codeHash": "0xb7b3a02e0891680632d442006d28724193fa1ecfdf767b0b0efd974638692aae"
+    },
+    "IntentVault-late": {
+      "address": "0x861395751ebd3292D884D4D94536905b58B54A9f",
+      "codeHash": "0xc49c10e52a4704192f7b1f10154c66a23cab2656bce0c81d654d5a4f692b76ea"
+    }
+  },
+  "adapterId": "0x8dcc14ccb6787c6ce2830d5e7d05b8a4fdcce77f6bd00d8172bff6e9218b5e00",
+  "rootHash": "0x1aaa5494628377f714e0b45cac4ccbafdca5804bd639abb56e8e7a994102dfde",
+  "agent": "0x168e85c1e34Eac1750B87B609c5448de8D3c10b1",
+  "rootAndRelayer": "0x6BD6Db75B56acE65019AA08FCAd4778808Da08bD",
+  "ownerOverride": "Same funded root/relayer key explicitly authorized; independent unfunded agent key",
+  "demoAccountState": "LEASE_REVOKED; TREASURY_RECOVERED; READ_ONLY_REFERENCE",
+  "proofs": {
+    "permittedPay": {
+      "intent": {
+        "leaseId": "0x98c3bedee1414ae5a1c83f3474cfa87009965d0c30ef9e47087808db2e870057",
+        "nonce": "1",
+        "kind": 9,
+        "token": "0x3600000000000000000000000000000000000000",
+        "recipient": "0x263174780015983489C0987e4AB1886e7Ab8348E",
+        "adapterId": "0x8dcc14ccb6787c6ce2830d5e7d05b8a4fdcce77f6bd00d8172bff6e9218b5e00",
+        "amount": "10000",
+        "deadline": "1792264898",
+        "maxFee": "0",
+        "feeRecipient": "0x0000000000000000000000000000000000000000",
+        "planHash": "0x4f1d4549740b53023a37dcdf75d0dfb5ab46ead2f6ad25cd2504019eac34693a"
+      },
+      "transactionHash": "0x2e55b8f283865696b07156e46d06cd05b13df5f8dfb9a8baf6751ed8c1355b66",
+      "status": "success",
+      "contractAddress": null,
+      "blockNumber": "67704244",
+      "blockHash": "0x40ea34c9ea528e96a36c78a9b5dfdf791fc5f5afcdfa4daa0cbe5768eee39c06",
+      "gasUsed": "262754",
+      "effectiveGasPrice": "20000000000",
+      "explorer": "https://explorer.testnet.arc.io/tx/0x2e55b8f283865696b07156e46d06cd05b13df5f8dfb9a8baf6751ed8c1355b66"
+    },
+    "deniedRedirect": {
+      "transactionHash": "0x4bcdda374ec3442e7fade44e3f529f1267631e91eeb74bfe1eb119a491a989bc",
+      "status": "reverted",
+      "contractAddress": null,
+      "blockNumber": "67704254",
+      "blockHash": "0xd75b71ab96cc95a4a07f57428b5eacde9ec7cb356c0588d54b3f2b0ec45d3f91",
+      "gasUsed": "89039",
+      "effectiveGasPrice": "20000000000",
+      "explorer": "https://explorer.testnet.arc.io/tx/0x4bcdda374ec3442e7fade44e3f529f1267631e91eeb74bfe1eb119a491a989bc"
+    },
+    "deniedReplay": {
+      "transactionHash": "0xd3193b4125833c6f6e00a3e392a360aaa4cc6fe313ce235eda6e679f49f2ae27",
+      "status": "reverted",
+      "contractAddress": null,
+      "blockNumber": "67704263",
+      "blockHash": "0xfe1b618adaeb3d1b927bddf4907eb04e35b7d9508cd098e4f414a4e6f0f5d944",
+      "gasUsed": "97050",
+      "effectiveGasPrice": "20000000000",
+      "explorer": "https://explorer.testnet.arc.io/tx/0xd3193b4125833c6f6e00a3e392a360aaa4cc6fe313ce235eda6e679f49f2ae27"
+    },
+    "deniedPaused": {
+      "transactionHash": "0xdda09238987163e59d83e4cac3cc2d2906433cd60306bb5681e608c6f8e13e2b",
+      "status": "reverted",
+      "contractAddress": null,
+      "blockNumber": "67704280",
+      "blockHash": "0x92ad93b6a1891b530d36e50719df4ef1a3a73e9cac509c50e059bc057354dc9c",
+      "gasUsed": "46580",
+      "effectiveGasPrice": "20000000000",
+      "explorer": "https://explorer.testnet.arc.io/tx/0xdda09238987163e59d83e4cac3cc2d2906433cd60306bb5681e608c6f8e13e2b"
+    },
+    "reservedPay": {
+      "transactionHash": "0x7a223a44fc57a8a8c6b418f4c8ae91a1492bce7d1d6c7ad158f1fcf514ef6e42",
+      "status": "success",
+      "contractAddress": null,
+      "blockNumber": "67704321",
+      "blockHash": "0x883818eb20b0fceb176818a10a58c996fe8091d53fae8233cd7e589e15f2dc85",
+      "gasUsed": "192929",
+      "effectiveGasPrice": "20000000000",
+      "explorer": "https://explorer.testnet.arc.io/tx/0x7a223a44fc57a8a8c6b418f4c8ae91a1492bce7d1d6c7ad158f1fcf514ef6e42",
+      "transport": "DIRECT_ERC20_FUNDING_NOT_CCTP"
+    },
+    "deniedRevoked": {
+      "transactionHash": "0xeeb482db2a1bc0a1c08024bb57268c03c995d6b639af8f936e17a6d63109e9bf",
+      "status": "reverted",
+      "contractAddress": null,
+      "blockNumber": "67704361",
+      "blockHash": "0xfa7e674ae5c652fb6128c1be574bd5e8a8d6361c4a35b304495dbe733b8695ef",
+      "gasUsed": "68795",
+      "effectiveGasPrice": "20000000000",
+      "explorer": "https://explorer.testnet.arc.io/tx/0xeeb482db2a1bc0a1c08024bb57268c03c995d6b639af8f936e17a6d63109e9bf"
+    },
+    "recoverLate": {
+      "transactionHash": "0xd43ca0fd95c4257ce1f0c174aacea00e25926afecb7f5b266748a211aa0a55d0",
+      "status": "success",
+      "contractAddress": null,
+      "blockNumber": "67704371",
+      "blockHash": "0xe2347a14330320502d168b35c6876719ea55e48b1e810bb23aa96a02d5cc17e5",
+      "gasUsed": "116093",
+      "effectiveGasPrice": "20000000000",
+      "explorer": "https://explorer.testnet.arc.io/tx/0xd43ca0fd95c4257ce1f0c174aacea00e25926afecb7f5b266748a211aa0a55d0"
+    },
+    "withdrawRemainder": {
+      "transactionHash": "0x2633e9bb14f777b8106dc1538887491c42dcb3c97bce5d704b35847180a0dda3",
+      "status": "success",
+      "contractAddress": null,
+      "blockNumber": "67704381",
+      "blockHash": "0xf609f0a79d38bd17d5e05c42f5e1bf6ea26d619927f7533b62a55d245da2a9be",
+      "gasUsed": "74577",
+      "effectiveGasPrice": "20000000000",
+      "explorer": "https://explorer.testnet.arc.io/tx/0x2633e9bb14f777b8106dc1538887491c42dcb3c97bce5d704b35847180a0dda3"
+    },
+    "factoryIdempotency": {
+      "transactionHash": "0xd77d5b13a11566e7548b1322fd229e02d1237092be1ff1957a7426d1e1d69886",
+      "status": "success",
+      "contractAddress": null,
+      "blockNumber": "67704193",
+      "blockHash": "0xc608d0bda2a84f480ef64c4dacd98925204a5483d94669ebccd9c6b6a408c874",
+      "gasUsed": "36080",
+      "effectiveGasPrice": "20000000000",
+      "explorer": "https://explorer.testnet.arc.io/tx/0xd77d5b13a11566e7548b1322fd229e02d1237092be1ff1957a7426d1e1d69886"
+    }
+  },
+  "accounting": {
+    "principalFundedBaseUnits": "50000",
+    "recipientPaidBaseUnits": "20000",
+    "rootRecoveredBaseUnits": "30000",
+    "gasUsed": "10540255",
+    "gasCostNativeWei": "210805100000000000",
+    "conservativeBudgetUsedNativeWei": "260805100000000000",
+    "principalCeilingBaseUnits": "50000",
+    "gasCeilingNativeWei": "1750000000000000000",
+    "totalOwnerLimitNativeWei": "2000000000000000000"
+  },
+  "capabilities": {
+    "PAY": {
+      "status": "VERIFIED_TESTNET",
+      "leaseAuthority": "ONCHAIN",
+      "proofLevel": "LIVE_ARC_TESTNET",
+      "scope": "SINGLE_TOKEN_RECIPIENT_ADAPTER; FIXED_PERIOD_TOTAL_CAPS"
+    },
+    "vault": {
+      "status": "VERIFIED_TESTNET_CUSTODY_ONLY",
+      "crosschainIntentLevel": "VAULT_CUSTODY_OFFCHAIN_PROVENANCE",
+      "actualFunding": "DIRECT_ERC20_TRANSFER_NO_CCTP_MINT"
+    },
+    "cctpSource": {
+      "status": "BLOCKED",
+      "crosschainIntentLevel": "UNAVAILABLE"
+    },
+    "globalQuota": {
+      "status": "PARTIAL_LOCAL_ACCOUNTING_ONLY",
+      "coupledToAccountDebit": false,
+      "authenticatedRemoteSync": false
+    },
+    "unsupportedActions": [
+      "SWAP",
+      "BRIDGE",
+      "ESCROW_FUND"
+    ],
+    "unsupportedSignerPaths": [
+      "ERC1271",
+      "Circle",
+      "Safe modules",
+      "ERC7579"
+    ]
+  },
+  "packages": {
+    "@amane/core": "0.1.0",
+    "@amane/sdk": "0.1.0",
+    "@amane/policy": "0.2.0",
+    "@amane/arc": "0.2.0",
+    "@amane/cctp": "0.2.0",
+    "@amane/verify": "0.2.0"
+  },
+  "auditStatus": "Unaudited; targeted independent critic report exists locally",
+  "observedAt": "2026-10-17T17:25:08.298Z"
+}

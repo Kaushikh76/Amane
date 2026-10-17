@@ -8,6 +8,27 @@ Amane is an SDK and a pair of on-chain account contracts (Move on Sui, Solidity 
 
 ---
 
+## Continuity v2 on Arc — restricted testnet release candidate
+
+The new modules in `evm/src/arc` and packages `@amane/arc`, `@amane/policy`, `@amane/cctp`, `@amane/verify` are version 0.2.0. The supported execution path is **contract-enforced PAY** with a pinned token, recipient and immutable adapter. No Synq account or repository is required. Existing `@amane/core` / `@amane/sdk` v1 exports and Sui/Sepolia contracts remain unchanged.
+
+```bash
+npm ci
+npm run build
+forge test --offline --root evm
+# Full local independent SDK proof (start silent Anvil in another terminal):
+anvil --host 127.0.0.1 --port 18545 --chain-id 31337 --silent
+node scripts/continuity/local-proof.mjs
+# Read-only verification of recorded Arc testnet allowed/denied receipts:
+node examples/third-party-arc-pay/verify.mjs
+```
+
+Local tests, local Anvil and real testnet receipts carry distinct labels. See `deployments/arc-testnet.json` for the exact available live proof and addresses, [capabilities](docs/continuity/COMPATIBILITY.md), [threat model](docs/continuity/THREAT_MODEL.md) and [operations/recovery](docs/continuity/OPERATIONS.md). Source CCTP bridge authority, authenticated mint provenance, global cross-chain quota, SWAP/ESCROW_FUND, Circle/Safe/1271/7579 adapters and reimbursement are **unavailable** in this release. The CCTP helper prepares unsigned human-approval calldata; it cannot be used to advertise an Amane-authorized bridge. IntentVault is restricted custody with offchain provenance, not authenticated CCTP source binding.
+
+The relayer pays native USDC gas. A preflight rejection avoids a submitted transaction; races and deliberately broadcast negative tests still cost gas. No mainnet, remote push or package publication is authorized by these instructions. **Unaudited; testnet assets only.**
+
+---
+
 ## Contents
 
 - [How it works in 30 seconds](#how-it-works-in-30-seconds)
