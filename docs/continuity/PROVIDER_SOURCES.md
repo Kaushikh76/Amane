@@ -9,3 +9,7 @@
 - https://developers.circle.com/cctp/references/contract-interfaces — depositForBurnWithHook accepts arbitrary metadata; an attestation is not proof of arbitrary relayer JSON. The receiving app must validate authenticated raw message and its actual mint.
 
 CCTP package currently prepares calldata and binds a diagnostic commitment. It does not submit burns, verify Circle signatures or implement a source-account BRIDGE adapter. IntentVault supplies isolated custody with exact signed action checks and threshold recovery. Any claim of authenticated source intent remains UNAVAILABLE. No Circle credentials are required for local SDK tests.
+
+## Version3 implementation refresh
+
+2026-10-17: https://developers.circle.com/cctp/references/technical-guide and official linked https://github.com/circlefin/evm-cctp-contracts/blob/63ab1f0ac06ce0793c0bbfbb8d09816bc211386d/src/v2/MessageTransmitterV2.sol were inspected. Packed V2 header148 bytes and burn body228-byte fixed prefix are independently parsed; hook execution is integrator-owned. The destination performs receiveMessage(message,attestation), pins destinationCaller to itself, and measures the actual mint before custody release. Finalized quota callbacks implement the documented handleReceiveFinalizedMessage(uint32,bytes32,uint32,bytes) boundary; unfinalized callbacks fail closed. These local implementations supersede the missing-code statements above for v3 only. Live Circle provider interoperability is still unproven.

@@ -489,3 +489,29 @@ scripts/          deployment helpers
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+## Full authority v3 candidate
+
+The separate `evm/src/arc/authority`, `arc/cctp`, `arc/quota` and `arc/adapters` modules extend the original mandate beyond the restricted live PAY proof above. Package `0.3.0` adds `/authority` subpaths while preserving existing `@amane/core` / `@amane/sdk` v1 exports and the v2 default APIs. It is a local candidate: no v3 testnet deployment is implied by the archived v2 receipts.
+
+The full account supports multiple assets/recipients, delegated issuers, SWAP/PAY/BRIDGE/ESCROW_FUND, fixed period and cumulative caps, exact measurement, and threshold recovery. Optional owner-plus-agent reimbursement shares principal caps and cannot exceed measured gas. New CCTP modules bind source account execution to a fixed destination specification and verify actual raw-message attestations plus mint deltas. Global quota remains encumbered until an authenticated finalized freeze acknowledgement; after an asset's first binding, policy rotation cannot silently disable quota.
+
+Run the full candidate and unchanged regression suites:
+
+```sh
+npm ci
+FOUNDRY_OFFLINE=true npm test
+node scripts/continuity/authority-vectors.mjs
+forge test --offline --root evm --match-path 'test/arc/authority/*'
+```
+
+For the standalone SDK proof, run `anvil --silent --port 18545` in one terminal, then `node scripts/continuity/authority-local-proof.mjs` in another. The script accepts only localhost chain31337, creates deterministic fixture signers, resolves registry/token/code identity, installs a policy, activates an unfunded agent, relays exact PAY through a persistent journal, verifies canonical calldata/receipt and rejects a recovery-address redirect. It reads no owner key or environment secret. Stop Anvil after the proof.
+
+New public subpaths:
+
+- `@amane/policy/authority`, `/authority-registry`, `/authority-controls`: nested types, strict compiler/validator, block-bound identity resolver, EIP712 v3 controls.
+- `@amane/arc/authority`: explicit deployment identity, policy signing, simulation, isolated signing/relay with exclusive nonce journal, and generated artifacts.
+- `@amane/cctp/authority`: raw byte inspection and sandbox response fetching, explicitly unauthenticated until on-chain verification.
+- `@amane/verify/authority`: exact calldata/event, canonical block and historical code verification; confirmation count is not a consensus finality proof and global quota is not inferred.
+
+See `docs/continuity/ADR-FULL-AUTHORITY-PORT.md` and the v3 portion of `COMPATIBILITY.md`. Live Circle interoperability, provider governance, unconfigured external swap/escrow targets, Safe/ERC7579/Circle wallet integrations and the Sui continuity route remain explicit capability limits. Test fixtures never count as Circle settlement. No npm publication, remote push or mainnet deployment is authorized.

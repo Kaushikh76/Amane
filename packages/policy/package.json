@@ -1,6 +1,6 @@
 {
   "name": "@amane/policy",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -10,6 +10,21 @@
       "development": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./authority": {
+      "development": "./src/authority.ts",
+      "types": "./dist/authority.d.ts",
+      "default": "./dist/authority.js"
+    },
+    "./authority-registry": {
+      "development": "./src/authority-registry.ts",
+      "types": "./dist/authority-registry.d.ts",
+      "default": "./dist/authority-registry.js"
+    },
+    "./authority-controls": {
+      "development": "./src/authority-controls.ts",
+      "types": "./dist/authority-controls.d.ts",
+      "default": "./dist/authority-controls.js"
     }
   },
   "files": [
@@ -22,7 +37,8 @@
   },
   "dependencies": {
     "viem": "^2.56.9",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "@amane/core": "0.1.0"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

@@ -1,6 +1,6 @@
 {
   "name": "@amane/verify",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -10,6 +10,11 @@
       "development": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./authority": {
+      "development": "./src/authority.ts",
+      "types": "./dist/authority.d.ts",
+      "default": "./dist/authority.js"
     }
   },
   "files": [
@@ -22,7 +27,9 @@
   },
   "dependencies": {
     "viem": "^2.56.9",
-    "@amane/policy": "0.2.0"
+    "@amane/policy": "0.3.0",
+    "@amane/core": "0.1.0",
+    "@amane/arc": "0.3.0"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

@@ -1,0 +1,93 @@
+{
+  "status": "NOT_DEPLOYED",
+  "authorityVersion": 3,
+  "eip712": {
+    "name": "Amane Arc",
+    "version": "3",
+    "chainId": "actual chain",
+    "verifyingContract": "actual authority address"
+  },
+  "packages": {
+    "@amane/core": "0.1.0",
+    "@amane/sdk": "0.1.0",
+    "@amane/policy": "0.3.0",
+    "@amane/arc": "0.3.0",
+    "@amane/cctp": "0.3.0",
+    "@amane/verify": "0.3.0"
+  },
+  "contracts": {
+    "ArcAuthority": {
+      "creationCodeHash": "0xe364cfc2b2dd566c2b79c20aef74d412297697a20cc74dec4695d83de72bdc58",
+      "runtimeTemplateHash": "0x74ecd489397e478464822a1cc85e012edc73247d57daf258719b5ff076128566",
+      "runtimeBytes": 24287,
+      "creationBytes": 25592,
+      "runtimeTemplateIsNotDeployedCodeHash": true
+    },
+    "ArcAuthorityExt": {
+      "creationCodeHash": "0x056a7fc6ae65975527c29bdc6a1828a2217dfaba3076c2eea4a58b4b3d317f5f",
+      "runtimeTemplateHash": "0x99672d3b59bcc2da63cc0f5fc918301e23d9b921e36b23824d8abca370a4911b",
+      "runtimeBytes": 18666,
+      "creationBytes": 18697,
+      "runtimeTemplateIsNotDeployedCodeHash": true
+    },
+    "ArcAuthorityFactory": {
+      "creationCodeHash": "0x312afd775b6ba1315f363ca5271623d220f572e07f5671bbb5ff2662ef1bc039",
+      "runtimeTemplateHash": "0xfaf09285b0d7f45b57c9ace3a264fc851af37d48b76819a71210ec34e5b3b7fe",
+      "runtimeBytes": 1936,
+      "creationBytes": 28649,
+      "runtimeTemplateIsNotDeployedCodeHash": true
+    },
+    "CctpSourceAdapter": {
+      "creationCodeHash": "0xf9daf487f52823e9c4036b2f1e16002f185a16e81a3338e0dbf234c5ac3e52fe",
+      "runtimeTemplateHash": "0x2574ef6a83c15911f76321c7fe158b35b9082a11195d011ac823edce2667b1ce",
+      "runtimeBytes": 3295,
+      "creationBytes": 4061,
+      "runtimeTemplateIsNotDeployedCodeHash": true
+    },
+    "CctpReceivingVault": {
+      "creationCodeHash": "0x282598e590a7c28e6a931e348b2fae139e20c7201491a68c2e96d0828d698115",
+      "runtimeTemplateHash": "0xf1ebef3417d2505dfe6ef8ec62f8e3f159faa1676862c60b5ee7312c9d5fcf76",
+      "runtimeBytes": 5229,
+      "creationBytes": 6054,
+      "runtimeTemplateIsNotDeployedCodeHash": true
+    },
+    "CctpDestinationAdapter": {
+      "creationCodeHash": "0xf16afeded21e49a1cce75c043284187dbb2b3eba2289f6c6aac9625a0a8832d0",
+      "runtimeTemplateHash": "0x87c77ef6e2878aa6a5c5da54ebb011c71de3410fff9eab4cd282521d78710bab",
+      "runtimeBytes": 1354,
+      "creationBytes": 1667,
+      "runtimeTemplateIsNotDeployedCodeHash": true
+    },
+    "CctpRouteFactory": {
+      "creationCodeHash": "0x70ba215a2226d9511dee6e84c9963c49952dfb68c8ad7dc4f63098f090e668d7",
+      "runtimeTemplateHash": "0x8095704bac46b758e41ef06c33d9d1adcc97d91de2f655e090907b0d9656152b",
+      "runtimeBytes": 9173,
+      "creationBytes": 9199,
+      "runtimeTemplateIsNotDeployedCodeHash": true
+    },
+    "GlobalQuotaRoot": {
+      "creationCodeHash": "0x69a100ecf36d7ef789885f4be7dc9b57330b6d6d4f380195d2dafb6499c29330",
+      "runtimeTemplateHash": "0x1191b97c126c08fad5ded3078221a84bf9d66d85751eb1b92116df9acfff2992",
+      "runtimeBytes": 5992,
+      "creationBytes": 7025,
+      "runtimeTemplateIsNotDeployedCodeHash": true
+    },
+    "EndpointQuota": {
+      "creationCodeHash": "0x74125b9628a96d15e530c51e78354fa3a6fa1d8a23da4d03954cc19d87e99336",
+      "runtimeTemplateHash": "0xa91be4f4f770465c5430826505125a1d9f33356eae289586eeb1e3b5496a6095",
+      "runtimeBytes": 3398,
+      "creationBytes": 3994,
+      "runtimeTemplateIsNotDeployedCodeHash": true
+    },
+    "EscrowFundAdapter": {
+      "creationCodeHash": "0xf7f09f97682c0d1d298b9e4431e70f38f0a3caaa1b997cfd42b06fe6b197dbe6",
+      "runtimeTemplateHash": "0xe341ca8fab64b2ab817cccc38e6c8414d5cd765ff4b31eaa318061e37322f732",
+      "runtimeBytes": 3036,
+      "creationBytes": 3445,
+      "runtimeTemplateIsNotDeployedCodeHash": true
+    }
+  },
+  "broadcastApproval": "REQUIRED_FOR_NEW_V3_AND_SEPOLIA_TRANSACTIONS",
+  "sourcePin": "Use exact commit in AMANE_RELEASE_MANIFEST_v3.md; repository manifest does not self-reference its own commit.",
+  "proofCeiling": "LOCAL_INTEGRATION"
+}

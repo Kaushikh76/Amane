@@ -25,3 +25,23 @@ Compiler omission is prohibited. Unsupported clauses reject instead of compiling
 The source-map-js high advisory is confined to the existing dev-tool dependency graph (Vitest -> Vite -> PostCSS). No new runtime dependency imports it. Preserve the finding; do not characterize the advisory as resolved.
 
 Contract event observation requires vetted code identity, canonical receipt and explicit downstream confirmation/reorg handling. Local JSON shape matching is always unauthenticated. No professional security audit, universal wallet compatibility or mainnet readiness is claimed.
+
+## Full authority v3 local candidate (package 0.3.0)
+
+The table above describes the archived deployed v2 subset. Version3 adds isolated modules and separate SDK subpaths; it does not change v2 deployments or v1 Sui/Sepolia sources.
+
+| Candidate path | Enforcing implementation | Current evidence / limit |
+|---|---|---|
+| Multi-asset/recipient root, delegated issuer leases | ArcAuthority + pinned extension | Local tests; root/lease/issuer per-action, fixed epoch and lifetime debit |
+| Bounded fee sponsorship | Owner FeePolicy + agent FeeIntent | Local tests; exact pinned recipient, combined principal/fee caps, measured Arc18→ERC20 6 conversion |
+| CCTP source | CctpSourceAdapter called only by named enforcing source account | Local fixtures; exact burn, immutable route/minimum/fee, hook source action+destination spec |
+| CCTP mint/custody | Per-destination-spec CREATE2 CctpReceivingVault + pinned MessageTransmitter | Local fixtures; actual raw attestation verifier call and exact mint delta; real Circle evidence unavailable |
+| Global quota | GlobalQuotaRoot + EndpointQuota + atomic authority spend hook | Local grant/freeze/ACK and fuzz tests; sticky after first binding; before first binding not global |
+| Authenticated quota sync | Finalized MessageTransmitter callback from exact root/leaf domain/address | Local bus fixture; no HTTP ack, no timeout reclaim; provider attesters/governance trusted |
+| ESCROW_FUND | Immutable account/token/deal/target adapter, measured protocol credit and tokens | Local named Amane escrow ABI only; external provider target remains unconfigured |
+| SWAP | Full account owner floor + exact input/output measurements | Local fixture router only; approved live immutable route remains unavailable |
+| Circle user/SCA, Safe/ERC7579, Sui continuity route | No new integration | Remains unavailable until explicit provider/version/credential/runtime proof |
+
+Provider proxy runtime identity does not freeze its governance or implementation. Source and destination account code, route adapter/vault immutables and token/provider identities must be checked in the deployment manifest. Transport provenance is valid only when the immutable source account is the enforcing ArcAuthority. Preserve old-policy route adapter registration for in-flight recovery. Destination budgets independently count destination execution; global economic accounting requires one canonical asset/budget mapping and explicitly bound quota grants.
+
+New v3 testnet deployments, Sepolia burns and quota messages are outside the restricted v2 approval. No claim of live v3 CCTP or remote quota finality may be inferred from these fixtures.
