@@ -11,16 +11,18 @@ interface IQuotaHandlerFixture {function handleReceiveFinalizedMessage(uint32,by
 /// This is not a Circle attestation or a live cross-chain proof.
 contract QuotaBusFixture {
  struct Message {uint32 sourceDomain;bytes32 sender;address recipient;bytes body;}
+ uint32 public localDomain=26;
+ function setLocalDomain(uint32 value) external {require(msg.sender==fixtureOwner);localDomain=value;}
  address immutable fixtureOwner=msg.sender;mapping(address=>uint32) domains;Message[] private messages;
  function setDomain(address sender,uint32 domain) external {require(msg.sender==fixtureOwner);domains[sender]=domain;}
- function sendMessage(uint32,bytes32 recipient,bytes32,uint32 finality,bytes calldata body) external {require(finality==2000);messages.push(Message(domains[msg.sender],bytes32(uint256(uint160(msg.sender))),address(uint160(uint256(recipient))),body));}
+ function sendMessage(uint32 destinationDomain,bytes32 recipient,bytes32,uint32 finality,bytes calldata body) external {require(finality==2000);require(destinationDomain!=domains[msg.sender],"Domain is local domain");messages.push(Message(domains[msg.sender],bytes32(uint256(uint160(msg.sender))),address(uint160(uint256(recipient))),body));}
  function deliver(uint256 index) external {Message memory m=messages[index];require(IQuotaHandlerFixture(m.recipient).handleReceiveFinalizedMessage(m.sourceDomain,m.sender,2000,m.body));}
  function count() external view returns(uint256){return messages.length;}
 }
 contract AuthorityQuotaTest is AuthorityBase {
  using QuotaTypes for QuotaTypes.Grant;
  QuotaBusFixture bus;GlobalQuotaRoot root;EndpointQuota leaf;bytes32 constant BUDGET_ASSET=keccak256("USDC six decimal budget");
- function setUp() public override {super.setUp();_ready();bus=new QuotaBusFixture();address[] memory owners=new address[](1);owners[0]=ctrlA;root=new GlobalQuotaRoot(address(bus),acct.policyHash(),BUDGET_ASSET,100_000000,50_000000,3600,600,owners,1);leaf=new EndpointQuota(address(bus),address(root),26,address(acct),acct.chainRef(),acct.policyHash(),BUDGET_ASSET);bus.setDomain(address(root),26);bus.setDomain(address(leaf),0);}
+ function setUp() public override {super.setUp();_ready();bus=new QuotaBusFixture();address[] memory owners=new address[](1);owners[0]=ctrlA;root=new GlobalQuotaRoot(address(bus),acct.policyHash(),BUDGET_ASSET,100_000000,50_000000,3600,600,owners,1);bus.setLocalDomain(0);leaf=new EndpointQuota(address(bus),address(root),26,address(acct),acct.chainRef(),acct.policyHash(),BUDGET_ASSET);bus.setDomain(address(root),26);bus.setDomain(address(leaf),0);}
  function _grant(uint64 nonce,uint256 amount) internal view returns(QuotaTypes.Grant memory){return QuotaTypes.Grant(acct.policyHash(),BUDGET_ASSET,acct.chainRef(),address(acct),uint64(T0/3600),nonce,uint64(T0+300),amount);}
  function _signRoot(bytes32 h) internal view returns(bytes[] memory ss){ss=new bytes[](1);ss[0]=_sign(pkA,Domain.at(h,31337,address(root)));}
  function _allocate(QuotaTypes.Grant memory g) internal returns(bytes32){return root.allocate(g,address(leaf),0,_signRoot(root.allocationHash(g,address(leaf),0)));}
@@ -33,5 +35,8 @@ contract AuthorityQuotaTest is AuthorityBase {
  function test_duplicate_allocation_and_period_overallocation_rejected() public {QuotaTypes.Grant memory g=_grant(0,30_000000);_allocate(g);bytes[] memory sig=_signRoot(root.allocationHash(g,address(leaf),0));vm.expectRevert("WRONG_GRANT");root.allocate(g,address(leaf),0,sig);g=_grant(1,21_000000);sig=_signRoot(root.allocationHash(g,address(leaf),0));vm.expectRevert("GLOBAL_CAP");root.allocate(g,address(leaf),0,sig);assertEq(root.outstanding(),30_000000);}
  function testFuzz_spend_freeze_reclaim_conservation(uint256 amount) public {amount=bound(amount,1,25_000000);bytes32 id=_allocate(_grant(0,30_000000));bus.deliver(0);_bind(id);_exec(_pay(1,amount));root.requestFreeze(id,_signRoot(root.freezeHash(id)));assertEq(root.outstanding(),30_000000);bus.deliver(1);bus.deliver(2);assertEq(root.finalizedSpent(),amount);assertEq(root.free()+root.outstanding()+root.finalizedSpent(),100_000000);vm.expectRevert();bus.deliver(2);assertEq(root.free()+root.finalizedSpent(),100_000000);}
  function test_new_policy_cannot_drop_quota_mode() public {bytes32 id=_allocate(_grant(0,30_000000));bus.deliver(0);_bind(id);_install(_policy(2));leaseId=keccak256("new lease");AgentLease memory l=_lease(ctrlA);l.policyVersion=2;_activate(l,pkA);ActionIntent memory a=_pay(1,1);a.policyVersion=2;bytes memory sig=_agentSig(a);vm.expectRevert("QUOTA_BINDING_REQUIRED");acct.executeAction(a,sig);assertFalse(acct.nonceUsed(leaseId,1));}
+
+ function test_same_domain_grant_freeze_ack_are_atomic_without_provider_message() public {bus.setLocalDomain(26);EndpointQuota localLeaf=new EndpointQuota(address(bus),address(root),26,address(acct),acct.chainRef(),acct.policyHash(),BUDGET_ASSET);QuotaTypes.Grant memory g=_grant(0,30_000000);bytes32 id=root.allocate(g,address(localLeaf),26,_signRoot(root.allocationHash(g,address(localLeaf),26)));(uint256 issued,,,bool installed,)=localLeaf.balances(id);assertTrue(installed);assertEq(issued,30_000000);assertEq(bus.count(),0);vm.prank(address(acct));localLeaf.consume(id,12_000000);root.requestFreeze(id,_signRoot(root.freezeHash(id)));assertEq(root.finalizedSpent(),12_000000);assertEq(root.outstanding(),0);assertEq(root.free(),88_000000);assertEq(bus.count(),0);}
+ function test_local_callback_rejects_wrong_peer_and_remote_leaf_direct_call() public {QuotaTypes.Grant memory g=_grant(0,30_000000);bytes32 id=g.id();vm.expectRevert("REMOTE_ROOT");leaf.handleReceiveLocalMessage(abi.encode(uint8(1),id,g));vm.expectRevert("WRONG_ACK");root.handleReceiveLocalMessage(abi.encode(uint8(3),id,0));bus.setLocalDomain(26);EndpointQuota localLeaf=new EndpointQuota(address(bus),address(root),26,address(acct),acct.chainRef(),acct.policyHash(),BUDGET_ASSET);vm.expectRevert("WRONG_ROOT");localLeaf.handleReceiveLocalMessage(abi.encode(uint8(1),id,g));}
 
 }

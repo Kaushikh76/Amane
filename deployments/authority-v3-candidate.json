@@ -10,10 +10,10 @@
   "packages": {
     "@amane/core": "0.1.0",
     "@amane/sdk": "0.1.0",
-    "@amane/policy": "0.3.0",
-    "@amane/arc": "0.3.0",
-    "@amane/cctp": "0.3.0",
-    "@amane/verify": "0.3.0"
+    "@amane/policy": "0.3.1",
+    "@amane/arc": "0.3.1",
+    "@amane/cctp": "0.3.1",
+    "@amane/verify": "0.3.1"
   },
   "contracts": {
     "ArcAuthority": {
@@ -66,17 +66,17 @@
       "runtimeTemplateIsNotDeployedCodeHash": true
     },
     "GlobalQuotaRoot": {
-      "creationCodeHash": "0x69a100ecf36d7ef789885f4be7dc9b57330b6d6d4f380195d2dafb6499c29330",
-      "runtimeTemplateHash": "0x1191b97c126c08fad5ded3078221a84bf9d66d85751eb1b92116df9acfff2992",
-      "runtimeBytes": 5992,
-      "creationBytes": 7025,
+      "creationCodeHash": "0x88e91e720d50682b35dfb70a5d74f428098e514cefdbd043809055f26afd2f72",
+      "runtimeTemplateHash": "0xaca393baa80f17f19c151be708e4cef053b8091e46907b6e03ec9be82e4adbe6",
+      "runtimeBytes": 6486,
+      "creationBytes": 7679,
       "runtimeTemplateIsNotDeployedCodeHash": true
     },
     "EndpointQuota": {
-      "creationCodeHash": "0x74125b9628a96d15e530c51e78354fa3a6fa1d8a23da4d03954cc19d87e99336",
-      "runtimeTemplateHash": "0xa91be4f4f770465c5430826505125a1d9f33356eae289586eeb1e3b5496a6095",
-      "runtimeBytes": 3398,
-      "creationBytes": 3994,
+      "creationCodeHash": "0x9a7d7638672fb86f46aa317abbdadf2b6cdc580676e635959f5b0aa6c6650ee8",
+      "runtimeTemplateHash": "0x4d99898c18c8ce522ae6a4cfc3ebb4069deb1bb288745dbd3c540dd6c52c5429",
+      "runtimeBytes": 3995,
+      "creationBytes": 4771,
       "runtimeTemplateIsNotDeployedCodeHash": true
     },
     "EscrowFundAdapter": {

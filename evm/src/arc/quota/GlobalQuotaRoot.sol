@@ -28,7 +28,11 @@ contract GlobalQuotaRoot is QuotaSync {
  function requestFreeze(bytes32 id,bytes[] calldata signatures) external {Allocation storage a=allocations[id];require(a.status==1,"NOT_ACTIVE");_threshold(freezeHash(id),signatures);a.status=2;_send(a.domain,a.leaf,abi.encode(uint8(2),id));emit FreezeRequested(id);}
  function resendFreeze(bytes32 id) external {Allocation memory a=allocations[id];require(a.status==2,"NOT_PENDING");_send(a.domain,a.leaf,abi.encode(uint8(2),id));}
  function handleReceiveFinalizedMessage(uint32 sourceDomain,bytes32 sender,uint32 finality,bytes calldata body) external returns(bool){
-  _authenticate(finality);(uint8 kind,bytes32 id,uint256 spent)=abi.decode(body,(uint8,bytes32,uint256));Allocation storage a=allocations[id];
+  _authenticate(finality);return _receive(sourceDomain,sender,body);
+ }
+ function handleReceiveLocalMessage(bytes calldata body) external returns(bool){return _receive(localDomain,bytes32(uint256(uint160(msg.sender))),body);}
+ function _receive(uint32 sourceDomain,bytes32 sender,bytes calldata body) private returns(bool){
+  (uint8 kind,bytes32 id,uint256 spent)=abi.decode(body,(uint8,bytes32,uint256));Allocation storage a=allocations[id];
   require(kind==3&&a.status==2&&a.domain==sourceDomain&&sender==bytes32(uint256(uint160(a.leaf)))&&spent<=a.amount,"WRONG_ACK");
   a.status=3;outstanding-=a.amount;finalizedSpent+=spent;epochEncumbered[a.epoch]-=a.amount-spent;emit Reclaimed(id,spent,a.amount-spent);return true;
  }
