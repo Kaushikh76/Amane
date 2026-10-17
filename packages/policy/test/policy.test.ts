@@ -1,0 +1,23 @@
+import {describe,it,expect} from 'vitest';
+import {compilePolicy,validateLease,validateAction,domain,types,typeHashes,policyHash,actionHash,leaseHash,type RootPolicy,type AgentLease,type ActionIntent,type ExecutionState} from '../src/index.js';
+import {hashTypedData,type Address,type Hex} from 'viem';
+const addr=(n:number)=>`0x${n.toString(16).padStart(40,'0')}` as Address;
+const hash=(n:number)=>`0x${n.toString(16).padStart(64,'0')}` as Hex;
+const account=addr(100);const p:RootPolicy={version:1n,token:addr(1),recipient:addr(2),adapterId:hash(3),recovery:addr(4),perAction:20n,perPeriod:40n,total:100n,periodSeconds:100n,maxLeaseLifetime:1000n};
+const rootHash=policyHash(p,31337,account);
+const l:AgentLease={leaseId:hash(5),rootHash,agent:addr(6),validAfter:1000n,expiresAt:2000n,perAction:10n,perPeriod:30n,total:80n};
+const a:ActionIntent={leaseId:l.leaseId,nonce:1n,kind:9,token:p.token,recipient:p.recipient,adapterId:p.adapterId,amount:10n,deadline:1900n,maxFee:0n,feeRecipient:addr(0),planHash:hash(7)};
+const state:ExecutionState={now:1000n,paused:false,revoked:false,nonceUsed:false,rootPeriodSpent:0n,rootTotalSpent:0n,leasePeriodSpent:0n,leaseTotalSpent:0n};
+describe('fail-closed compiler and interpreter',()=>{
+ it('compiles positive PAY without Synq',()=>expect(compilePolicy(p,31337,account).rootHash).toBe(rootHash));
+ it('allows exact lease/action',()=>expect(validateAction(p,rootHash,l,a,state)).toEqual(a));
+ for(const [name,patch] of Object.entries({before:{now:999n},expired:{now:2001n},deadline:{now:1901n},paused:{paused:true},revoked:{revoked:true},replay:{nonceUsed:true},rootPeriod:{rootPeriodSpent:31n},leasePeriod:{leasePeriodSpent:21n},rootTotal:{rootTotalSpent:91n},leaseTotal:{leaseTotalSpent:71n}}))it(`denies ${name}`,()=>expect(()=>validateAction(p,rootHash,l,a,{...state,...patch})).toThrow());
+ for(const [name,patch] of Object.entries({recipient:{recipient:addr(99)},token:{token:addr(99)},adapter:{adapterId:hash(99)},lease:{leaseId:hash(99)},zero:{amount:0n},overcap:{amount:11n},fee:{maxFee:1n},feeRecipient:{feeRecipient:addr(99)},call:{kind:255},float:{amount:0.1},unknown:{arbitraryCalldata:'0x'}}))it(`denies action ${name}`,()=>expect(()=>validateAction(p,rootHash,l,{...a,...patch},state)).toThrow());
+ for(const [name,patch] of Object.entries({period:{periodSeconds:0n},lifetime:{maxLeaseLifetime:0n},cap:{perAction:41n},unknown:{allowAll:true},recovery:{recovery:addr(0)},self:{recipient:account},float:{total:0.1}}))it(`denies policy ${name}`,()=>expect(()=>compilePolicy({...p,...patch},31337,account)).toThrow());
+ it('rejects widened lease',()=>expect(()=>validateLease(p,rootHash,{...l,perAction:21n})).toThrow());
+ it('fails unsupported chain',()=>expect(()=>domain(1,account)).toThrow());
+ it('uses endpoint-specific domain',()=>expect(actionHash(a,31337,account)).not.toBe(actionHash(a,31337,addr(101))));
+ it('rejects v1/v2 signature domain replay',()=>expect(hashTypedData({domain:{name:'Amane',version:'1',chainId:11155111},types,primaryType:'ActionIntent',message:a})).not.toBe(actionHash(a,31337,account)));
+ it('1000 randomized bounded cases agree with independent limits',()=>{for(let i=0;i<1000;i++){const amount=BigInt(i%17),rootSpent=BigInt((i*13)%45),leaseSpent=BigInt((i*7)%35);const expected=amount>0n && amount<=10n && rootSpent+amount<=40n && leaseSpent+amount<=30n;let allowed=true;try{validateAction(p,rootHash,l,{...a,amount},{...state,rootPeriodSpent:rootSpent,leasePeriodSpent:leaseSpent});}catch{allowed=false;}expect(allowed).toBe(expected);}});
+ it('all type hashes are 32-byte values',()=>expect(Object.values(typeHashes).every(x=>x.length===66)).toBe(true));
+});
